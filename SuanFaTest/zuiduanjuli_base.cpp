@@ -3,27 +3,15 @@ using namespace std;
 
 const long long INF = 1e7;
 
-bool allDetected(const bool flag[],long long n){
-    for(long long i = 1; i <= n; i++){
-        if(!flag[i]){
-            return false;
-        }
-    }
-    return true;
-}
-
 void printBestWay(const long long p[], long long targetPoint, long long st){
     // 回溯路径方式
     long long bestWay[121];
     long long i = 1;
-    // 初始化
     for (long long & zcw : bestWay){
         zcw = INF;
     }
-    // 最开头的设为追踪点
     bestWay[0] = targetPoint;
     while (p[targetPoint] != -1){
-        // 如果向上找没有了，终止循环
         bestWay[i] = p[targetPoint];
         targetPoint = p[targetPoint];
         i++;
@@ -84,28 +72,28 @@ int main(){
     isFound[startP] = true;
     isFound[0] = true;
     // 2.找最小，标好点，借东风
-    while(!allDetected(isFound,cityNum)){ // 没探测完就别停下来
-        // 找dist[]最小
+    while(true){
         long long temp = INF;
-        long long x = startP;
+        long long x = -1; // 初始化为无效值
         for(long long i = 1; i <= cityNum; i++){
-            if(!isFound[i] && dist[i] < temp){ // 随便找一个临近的就行了
-                x = i; // x是你的当前位置
+            // 找到一个临近的点
+            if(!isFound[i] && dist[i] < temp){
+                x = i;
                 temp = dist[i];
-            }else{
-                isFound[i] = true;
-                continue;
             }
-            // 标记当前位置x已经探测到
-            isFound[x] = true;
-            // 借东风
-            // 先筛除不临近的（x到y的距离无穷大），再搞出到startP最近的点的距离（startP到y的距离 > startP到当前点x的距离 + x到y的距离，是的话就更新）
-            for(long long y = 1; y <= cityNum; y++){ // x为当前位置，从1号一直往上找
-                if(!isFound[y] && map[x][y] < INF){ // 没找过的城市，以及是距离不是无限的，考虑一下
-                    if(dist[y] > (dist[x] + map[x][y])){ // 如果距离小的，更新dist[]和前驱qianQu[]
-                        dist[y] = dist[x] + map[x][y];
-                        qianQu[y] = x;
-                    }
+        }
+
+        if (x == -1) break; // 如果没有找到有效节点，直接结束
+        isFound[x] = true;
+
+        // 借东风
+        // 先筛除不临近的（x到y的距离无穷大）
+        for(long long y = 1; y <= cityNum; y++){
+            // 关键原理：x-y的距离+y-st的距离 < y-st的距离
+            if(!isFound[y] && map[x][y] < INF){ // x为当前位置，从1号一直往上找
+                if(dist[y] > (dist[x] + map[x][y])){ // 没找过的城市，以及是距离不是无限的，考虑一下
+                    dist[y] = dist[x] + map[x][y]; // 如果距离小的，更新dist[]和前驱qianQu[]
+                    qianQu[y] = x;
                 }
             }
         }
