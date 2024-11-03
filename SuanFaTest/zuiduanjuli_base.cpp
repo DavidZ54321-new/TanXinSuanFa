@@ -16,11 +16,14 @@ void printBestWay(const long long p[], long long targetPoint, long long st){
     // 回溯路径方式
     long long bestWay[121];
     long long i = 1;
+    // 初始化
     for (long long & zcw : bestWay){
         zcw = INF;
     }
+    // 最开头的设为追踪点
     bestWay[0] = targetPoint;
     while (p[targetPoint] != -1){
+        // 如果向上找没有了，终止循环
         bestWay[i] = p[targetPoint];
         targetPoint = p[targetPoint];
         i++;
@@ -89,6 +92,9 @@ int main(){
             if(!isFound[i] && dist[i] < temp){ // 随便找一个临近的就行了
                 x = i; // x是你的当前位置
                 temp = dist[i];
+            }else{
+                isFound[i] = true;
+                continue;
             }
             // 标记当前位置x已经探测到
             isFound[x] = true;
